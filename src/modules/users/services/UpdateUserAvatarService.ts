@@ -1,26 +1,32 @@
-import { getRepository } from 'typeorm';
 import path from 'path';
 import fs from 'fs';
+import uploadConfig from '@config/upload';
+import { injectable, inject } from 'tsyringe';
+
+import IUsersRepository from '../repositories/IUserRepository';
 
 import AppError from '@shared/errors/AppError';
-import uploadConfig from '@config/upload';
-import User from '../infra/typeorm/entities/User';
 import HidePasswordUserService from './HidePasswordUserService';
 
-interface Request {
+import User from '../infra/typeorm/entities/User';
+
+interface IRequest {
   user_id: string;
-  avatarFilename: string;
+  avatarFilename: string | undefined;
 }
 
+@injectable()
 class UpdateUserAvatarService {
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: IUsersRepository,
+  ) {}
+
   public async execute({
     user_id,
     avatarFilename,
-  }: Request): Promise<Omit<User, 'password'>> {
-    const usersRepository = getRepository(User);
-
-    const user = await usersRepository.findOne(user_id);
-
+  }: IRequest): Promise<Omit<User, 'password'>> {
+    const user = await this.usersRepository.findById(user_id);
     if (!user) {
       throw new AppError('Only authenticated users can change avatar.', 401);
     }
@@ -36,7 +42,7 @@ class UpdateUserAvatarService {
 
     user.avatar = avatarFilename;
 
-    await usersRepository.save(user);
+    await this.usersRepository.save(user);
 
     const userDataSession = HidePasswordUserService.toDTO(user);
 
