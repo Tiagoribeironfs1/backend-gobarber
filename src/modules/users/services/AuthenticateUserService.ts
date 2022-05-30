@@ -51,7 +51,7 @@ class AuthenticateUserService {
       expiresIn,
     });
 
-    console.log(user, token);
+    // console.log(user, token);
     return { user, token };
   }
 }
