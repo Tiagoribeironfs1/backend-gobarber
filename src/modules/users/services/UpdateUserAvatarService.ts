@@ -1,9 +1,9 @@
 import { injectable, inject } from 'tsyringe';
+import { instanceToInstance } from 'class-transformer';
 
 import AppError from '@shared/errors/AppError';
 import IUsersRepository from '../repositories/IUserRepository';
 import IStorageProvider from '@shared/container/providers/StorageProvider/models/IStorageProvider';
-import HidePasswordUserService from './HidePasswordUserService';
 
 import User from '../infra/typeorm/entities/User';
 
@@ -41,9 +41,7 @@ class UpdateUserAvatarService {
 
     await this.usersRepository.save(user);
 
-    const userDataSession = HidePasswordUserService.toDTO(user);
-
-    return userDataSession;
+    return instanceToInstance(user);
   }
 }
 

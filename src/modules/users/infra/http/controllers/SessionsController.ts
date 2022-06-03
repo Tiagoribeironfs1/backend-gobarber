@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { container } from 'tsyringe';
+import { instanceToInstance } from 'class-transformer';
 
 import AuthenticateUserService from '@modules/users/services/AuthenticateUserService';
-import HidePasswordUserService from '@modules/users/services/HidePasswordUserService';
 
 export default class SessionsController {
   public async create(request: Request, response: Response): Promise<Response> {
@@ -15,7 +15,6 @@ export default class SessionsController {
       password,
     });
 
-    const userDataSession = HidePasswordUserService.toDTO(user);
-    return response.json({ userDataSession, token });
+    return response.json({ user: instanceToInstance(user), token });
   }
 }

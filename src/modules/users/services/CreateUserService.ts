@@ -1,5 +1,5 @@
-import HidePasswordUserService from './HidePasswordUserService';
 import { injectable, inject } from 'tsyringe';
+import { instanceToInstance } from 'class-transformer';
 
 import AppError from '@shared/errors/AppError';
 import IUsersRepository from '../repositories/IUserRepository';
@@ -23,11 +23,7 @@ class CreateUserService {
     private hashProvider: IHashProvider,
   ) {}
 
-  public async execute({
-    name,
-    email,
-    password,
-  }: IRequest): Promise<Omit<User, 'password'>> {
+  public async execute({ name, email, password }: IRequest): Promise<User> {
     const checkUserExists = await this.usersRepository.findByEmail(email);
 
     if (checkUserExists) {
@@ -42,9 +38,7 @@ class CreateUserService {
       password: hashedPassword,
     });
 
-    const mappedUser = HidePasswordUserService.toDTO(user);
-
-    return mappedUser;
+    return instanceToInstance(user);
   }
 }
 
