@@ -13,6 +13,6 @@ export default class UserAvatarControler {
       avatarFilename: request.file ? request.file?.filename : '',
     });
 
-    return response.json({ user: instanceToInstance(user) });
+    return response.json(instanceToInstance(user));
   }
 }

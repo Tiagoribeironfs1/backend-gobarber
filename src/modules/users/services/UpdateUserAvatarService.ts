@@ -22,11 +22,9 @@ class UpdateUserAvatarService {
     private storageProvider: IStorageProvider,
   ) {}
 
-  public async execute({
-    user_id,
-    avatarFilename,
-  }: IRequest): Promise<Omit<User, 'password'>> {
+  public async execute({ user_id, avatarFilename }: IRequest): Promise<User> {
     const user = await this.usersRepository.findById(user_id);
+
     if (!user) {
       throw new AppError('Only authenticated users can change avatar.', 401);
     }
